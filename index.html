@@ -1,17 +1,92 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desmos | Graphing Calculator</title>
+    <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+        }
+        #calculator {
+            flex-grow: 1;
+            width: 100%;
+            height: calc(100vh - 30px);
+        }
+        #bottomBar {
+            display: flex;
+            width: 100%;
+            padding: 0px;
+            background-color: #ffffff;
+            border-top: 0px solid #ccc;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            justify-content: center;
+            align-items: center;
+        }
+        input, button {
+            padding: 5px;
+            margin: 5px;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="calculator"></div>
+    
+    <div id="bottomBar">
+        <input type="text" id="linkInput" placeholder="" size="175" onkeypress="handleKeyPress(event)" />
+        <button onclick="openInAboutBlank()">Open</button>
+    </div>
+    
+    <script>
+        var elt = document.getElementById('calculator');
+        var calculator = Desmos.GraphingCalculator(elt);
 
-<title>Desmos | Graphing Calculator</title>
+        function openInAboutBlank() {
+            let inputField = document.getElementById('linkInput');
+            let link = inputField.value.trim();
+            if (!link.startsWith("http://") && !link.startsWith("https://")) {
+                link = "https://" + link;
+            }
 
-<link rel="image_src" href="https://s3.amazonaws.com/desmos/img/calc_thumb.png" />
+            const newWindow = window.open("about:blank", "_blank");
+            if (newWindow) {
+                newWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Desmos | Graphing Calculator</title>
+                        <style>
+                            html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; display: flex; }
+                            iframe { width: 100vw; height: 100vh; border: none; flex-grow: 1; }
+                        </style>
+                    </head>
+                    <body>
+                        <iframe src="${link}" allowfullscreen></iframe>
+                    </body>
+                    </html>
+                `);
+                newWindow.document.close();
+                inputField.value = ""; // Clear input field after opening
+            } else {
+                alert("Popup blocked! Please allow popups for this website.");
+            }
+        }
 
-<script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
-
-<div id="calculator" style="width=device-width, initial-scale=1.0"></div>
-
-<script>
-  var elt = document.getElementById('calculator');
-  var calculator = Desmos.GraphingCalculator(elt);
-</script>
-
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                openInAboutBlank();
+            }
+        }
+    </script>
 </body>
 </html>
